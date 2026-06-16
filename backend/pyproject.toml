@@ -1,0 +1,71 @@
+[project]
+name = "copytrade-sim-backend"
+version = "0.1.0"
+description = "Backend for the CopyTrade Sim platform (copy-trading simulator on 13F + Congress disclosures)."
+requires-python = ">=3.12"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "F",
+    "W",
+    "I",
+    "B",
+    "UP",
+    "N",
+    "SIM",
+    "ASYNC",
+    "S",
+    "RUF",
+]
+ignore = [
+    "E501",
+    "B008",
+    "S101",
+]
+
+[tool.ruff.lint.per-file-ignores]
+"alembic/*" = ["E", "F"]
+"tests/*" = ["S", "B011"]
+"scripts/*" = ["S"]
+"app/core/config.py" = ["S105"]
+"app/schemas/auth.py" = ["S105"]
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+
+[tool.mypy]
+python_version = "3.12"
+strict = true
+plugins = ["pydantic.mypy", "sqlalchemy.ext.mypy.plugin"]
+ignore_missing_imports = false
+warn_unused_configs = true
+disallow_untyped_defs = true
+no_implicit_optional = true
+warn_redundant_casts = true
+
+[[tool.mypy.overrides]]
+module = ["yfinance", "apscheduler.schedulers.asyncio", "apscheduler.triggers.cron"]
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+minversion = "8.0"
+testpaths = ["tests"]
+asyncio_mode = "auto"
+asyncio_default_fixture_loop_scope = "session"
+asyncio_default_test_loop_scope = "session"
+markers = [
+    "integration: tests that require a live PostgreSQL (run with -m integration)",
+]
+addopts = "-q --strict-markers -m 'not integration'"
+filterwarnings = [
+    "error",
+    "ignore::DeprecationWarning:yfinance.*",
+    "ignore::DeprecationWarning:passlib.*",
+    "ignore::starlette.exceptions.StarletteDeprecationWarning",
+]
